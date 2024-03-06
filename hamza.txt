@@ -1,0 +1,72 @@
+import random
+
+def afficher_plateau(plateau):
+    for ligne in plateau:
+        print(" | ".join(ligne))
+        print("-" * 9)
+
+def verifier_victoire(plateau, symbole):
+    # Vérifier les lignes et les colonnes
+    for i in range(3):
+        if all(plateau[i][j] == symbole for j in range(3)) or all(plateau[j][i] == symbole for j in range(3)):
+            return True
+    
+    # Vérifier les diagonales
+    if all(plateau[i][i] == symbole for i in range(3)) or all(plateau[i][2 - i] == symbole for i in range(3)):
+        return True
+
+    return False
+
+def est_case_vide(plateau, ligne, colonne):
+    return plateau[ligne][colonne] == " "
+
+def faire_un_coup(plateau, symbole, ligne, colonne):
+    if est_case_vide(plateau, ligne, colonne):
+        plateau[ligne][colonne] = symbole
+        return True
+    else:
+        print("La case est déjà occupée. Veuillez choisir une autre case.")
+        return False
+
+def tour_ordi(plateau, symbole_ordi):
+    while True:
+        ligne = random.randint(0, 2)
+        colonne = random.randint(0, 2)
+        if est_case_vide(plateau, ligne, colonne):
+            plateau[ligne][colonne] = symbole_ordi
+            break
+
+def jeu_morpion():
+    plateau = [[" " for _ in range(3)] for _ in range(3)]
+    symboles = ["X", "O"]
+    tour_joueur = True
+
+    while True:
+        afficher_plateau(plateau)
+
+        if tour_joueur:
+            symbole = symboles[0]
+            print("C'est à votre tour (symbole : {})".format(symbole))
+            ligne = int(input("Entrez le numéro de ligne (0, 1, 2) : "))
+            colonne = int(input("Entrez le numéro de colonne (0, 1, 2) : "))
+            coup_valide = faire_un_coup(plateau, symbole, ligne, colonne)
+        else:
+            symbole = symboles[1]
+            print("C'est le tour de l'ordinateur (symbole : {})".format(symbole))
+            tour_ordi(plateau, symbole)
+            coup_valide = True
+
+        if coup_valide:
+            if verifier_victoire(plateau, symbole):
+                afficher_plateau(plateau)
+                print("Le joueur {} a gagné !".format(symbole))
+                break
+            elif all(plateau[i][j] != " " for i in range(3) for j in range(3)):
+                afficher_plateau(plateau)
+                print("Match nul !")
+                break
+
+            tour_joueur = not tour_joueur
+
+if __name__ == "__main__":
+    jeu_morpion()
